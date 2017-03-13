@@ -1,0 +1,3 @@
+pynder==0.0.11
+robobrowser==0.5.3
+lxml==3.7.3
