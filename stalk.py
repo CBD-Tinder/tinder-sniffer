@@ -12,6 +12,9 @@ new_params = get_data_to_update(session.profile, distance_filter, age_filter_max
 if len(new_params) != 0:
     session.update_profile(new_params)
 
-# Now we get the people around us...
-for user in session.nearby_users(limit=search_limit):
-    print("Name: ", user.name, " Fecha de Nacimiento:", user.birth_date)
+try:
+    # If there isn't new people nearby, it just launches an exception, so....
+    for user in session.nearby_users(limit=search_limit):
+        print("Name: ", user.name, " Fecha de Nacimiento:", user.birth_date)
+except:
+    print("No people found bro...")
