@@ -34,15 +34,15 @@ def get_data_to_update(profile, distance_filter=63, age_filter_max=100, age_filt
 
     if profile.distance_filter < distance_filter:
         new_params["distance_filter"] = distance_filter
-        print("Changing old distance filter %s to new one %s..." % (profile.distance_filter, distance_filter))
+        print("Changing old distance filter %s to new one %s..." % (profile.distance_filter, distance_filter), flush=True)
 
     if profile.age_filter_max < age_filter_max:
         new_params["age_filter_max"] = age_filter_max
-        print("Changing old max age %s to new one %s..." % (profile.age_filter_max, age_filter_max))
+        print("Changing old max age %s to new one %s..." % (profile.age_filter_max, age_filter_max), flush=True)
 
     if profile.age_filter_min > age_filter_min:
         new_params["age_filter_min"] = age_filter_min
-        print("Changing old min age %s to new one %s..." % (profile.age_filter_min, age_filter_min))
+        print("Changing old min age %s to new one %s..." % (profile.age_filter_min, age_filter_min), flush=True)
 
     return new_params
 
