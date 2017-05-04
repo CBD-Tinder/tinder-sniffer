@@ -11,7 +11,7 @@ import datetime
 def get_nearby_users_data(facebook_id, facebook_token, position):
 	# Logging in Tinder...
 	session = pynder.Session(facebook_id=facebook_id, facebook_token=facebook_token)
-	#session.update_location(position[0], position[1])
+	session.update_location(position[0], position[1])
 
 	# Checking the parameters... If one of them is outdated, we just update it
 	new_params = get_data_to_update(session.profile, distance_filter, age_filter_max, age_filter_min)
