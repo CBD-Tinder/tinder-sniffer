@@ -70,6 +70,7 @@ for user_id in triangulable_users:
 
 	user_positions[user_id] = {'name': user["name"], 'age': user["age"], 'gender': user["gender"], 'lat': lat, 'lon': lon}
 
-filename = now.strftime("%Y%m%d_%H00.txt")
+filename = "data/" + now.strftime("%Y%m%d_%H00.txt")
+print("Writing results to " + filename)
 with open(filename, "w") as f:
 	f.write(str(user_positions))
