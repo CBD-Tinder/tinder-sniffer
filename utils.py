@@ -30,7 +30,7 @@ def get_fb_access_token(email, password):
     return access_token
 
 def get_data_to_update(profile, distance_filter=63, age_filter_max=100, age_filter_min=18):
-    new_params = dict()
+    new_params = {}
 
     if profile.distance_filter < distance_filter:
         new_params["distance_filter"] = distance_filter

@@ -1,4 +1,5 @@
 data/
+user_ids.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
