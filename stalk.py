@@ -7,6 +7,7 @@ from user_ids import ids_to_stalk
 
 from dateutil.relativedelta import relativedelta
 import datetime
+import numpy
 
 ############################################################################################################
 
@@ -59,39 +60,49 @@ set_ids_to_stalk.update([user.id for user in session3.nearby_users(limit=search_
 
 print("Total: %d users to stalk." % len(set_ids_to_stalk), flush=True)
 
-# Update the data
-with open("user_ids.py", "w") as f:
-	f.write("ids_to_stalk = %s\n" % str(list(set_ids_to_stalk)))
-
 user_data = {}
+not_found_users = set()
 
 # Obtain data from the users
 for user_id in set_ids_to_stalk:
 
 	try:
+
 		data_session_1 = session1._api.user_info(user_id)
 		data_session_2 = session2._api.user_info(user_id)
 		data_session_3 = session3._api.user_info(user_id)
-	except pynder.errors.RequestError as err:
-		print("Skipping user '%s': %s" % (user_id, str(err)), flush=True)
 
-	user = data_session_1["results"]
-	user_birthdate = datetime.datetime.strptime(user["birth_date"][0:10], "%Y-%m-%d")
-	user_age = relativedelta(now, user_birthdate).years
+		user = data_session_1["results"]
+		user_birthdate = datetime.datetime.strptime(user["birth_date"][0:10], "%Y-%m-%d")
+		user_age = relativedelta(now, user_birthdate).years
 
-	lat, lon = get_lat_long_trilateration({'lat': session1.pos[0], 'lon': session1.pos[1], 'dist': data_session_1["results"]["distance_mi"] * 1.60934},
-										  {'lat': session2.pos[0], 'lon': session2.pos[1], 'dist': data_session_2["results"]["distance_mi"] * 1.60934},
-										  {'lat': session3.pos[0], 'lon': session3.pos[1], 'dist': data_session_3["results"]["distance_mi"] * 1.60934})
+		lat, lon = get_lat_long_trilateration({'lat': session1.pos[0], 'lon': session1.pos[1], 'dist': data_session_1["results"]["distance_mi"] * 1.60934},
+											  {'lat': session2.pos[0], 'lon': session2.pos[1], 'dist': data_session_2["results"]["distance_mi"] * 1.60934},
+											  {'lat': session3.pos[0], 'lon': session3.pos[1], 'dist': data_session_3["results"]["distance_mi"] * 1.60934})
 
-	user_data[user_id] = {
-							'gender': 'f' if user["gender"] == 1 else 'm',
-							'age': user_age,
-							'lat': lat,
-							'lon': lon
-						 }
+		if any(numpy.isnan([lat, lon])):
+			continue
 
-	if len(user_data) % 100 == 0:
-		print("%d users stalked" % len(user_data), flush=True)
+		user_data[user_id] = {
+								'gender': 'f' if user["gender"] == 1 else 'm',
+								'age': user_age,
+								'lat': lat,
+								'lon': lon
+							 }
+
+		if len(user_data) % 100 == 0:
+			print("%d users stalked" % len(user_data), flush=True)
+
+	except Exception as err:
+		print("Skipping user '%s': %s" % (user_id, str(err)))
+		if str(err) == "404":
+			not_found_users.add(user_id)
+
+set_ids_to_stalk -= not_found_users
+
+# Update the data
+with open("user_ids.py", "w") as f:
+	f.write("ids_to_stalk = %s\n" % str(list(set_ids_to_stalk)))
 
 filename = "data/" + now.strftime("%Y%m%d_%H00.txt")
 print("Writing results to " + filename, flush=True)
